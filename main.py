@@ -15,6 +15,11 @@ def handle_start_help(message):
     bot.reply_to(message, f'Привет, {message.chat.first_name}! Это бот-конвертер.')
 
 
+@bot.message_handler(commands=['values'])
+def handle_start_help(message):
+    print(message.text)
+    bot.reply_to(message, f'Привет, {message.chat.first_name}! Это бот-конвертер.')
+
 @bot.message_handler(content_types=['text', ])
 def repeat_text(message: telebot.types.Message):
     bot.send_message(message.chat.id, message.text)
