@@ -24,15 +24,15 @@ class CurrencyConverter:
         try:
             base_ticker = currency[base]
         except KeyError:
-            raise APIException(f'Не удалось найти валюту {base}.')
+            raise APIException(f'Не удалось найти валюту "{base}".')
 
         if quote == base:
-            raise APIException(f'Невозможно перевести одинаковые валюты {base}.')
+            raise APIException(f'Невозможно перевести одинаковые валюты "{base}".')
 
         try:
             amount = float(amount)
         except ValueError:
-            raise APIException(f'Не удалось обработать количество {amount}')
+            raise APIException(f'Не удалось обработать количество "{amount}"')
 
         r = requests.get(f'https://min-api.cryptocompare.com/data/price?fsym={quote_ticker}&tsyms={base_ticker}')
         total_base = json.loads(r.content)[currency[base]]

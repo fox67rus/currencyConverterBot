@@ -1,9 +1,8 @@
 import telebot
 
-import settings
+from settings import TOKEN
 from extensions import currency, CurrencyConverter, APIException
 
-TOKEN = settings.TOKEN
 bot = telebot.TeleBot(TOKEN)
 
 
@@ -31,16 +30,25 @@ def handle_start_help(message):
 @bot.message_handler(content_types=['text', ])
 def convert(message: telebot.types.Message):
     print(message.text)
-    values = message.text.split(' ')  # доллар рубль 1
 
-    if len(values) != 3:
-        raise APIException('Неправильный формат команды.')
+    try:
+        values = message.text.split(' ')  # доллар рубль 1
 
-    quote, base, amount = values
-    total_base = CurrencyConverter.convert(quote, base, amount)
+        if len(values) != 3:
+            raise APIException('Неправильный формат команды.')
 
-    text = f'Цена {amount} {quote} в {base} - {total_base}'
-    bot.send_message(message.chat.id, text)
+        quote, base, amount = values
+        total_base = CurrencyConverter.convert(quote, base, amount)
+        total_base *= float(amount)
+
+    except APIException as e:
+        bot.reply_to(message, f'Ошибка:\n {e}')
+    except Exception as e:
+        bot.reply_to(message, f'Не удалось обработать команду.\n{e}')
+    else:
+
+        text = f'Цена {amount} {quote} в {base} - {total_base}'
+        bot.send_message(message.chat.id, text)
 
 
 # обработка других типов сообщений
