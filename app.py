@@ -1,5 +1,6 @@
 import telebot
 
+
 from settings import TOKEN
 from extensions import currency, CurrencyConverter, APIException
 
@@ -41,7 +42,7 @@ def convert(message: telebot.types.Message):
     print(message.text)
 
     try:
-        values = message.text.split(' ')  # доллар рубль 1
+        values = message.text.lower().split(' ')
 
         if len(values) != 3:
             raise APIException('Неправильный формат команды. Введите /help для вызова справки.')
@@ -50,7 +51,7 @@ def convert(message: telebot.types.Message):
         total_base = CurrencyConverter.get_price(base, quote, amount)
 
     except APIException as e:
-        bot.reply_to(message, f'Ошибка:\n {e}')
+        bot.reply_to(message, f'Ошибка:\n{e}')
     except Exception as e:
         bot.reply_to(message, f'Хьюстон, у нас проблема:\n{e}')
     else:
@@ -58,6 +59,8 @@ def convert(message: telebot.types.Message):
                f'Цена {amount} {currency[base]}  = {total_base} {currency[quote]}'
         bot.send_message(message.chat.id, text)
 
+
+# дополнительные функции
 
 # обработка других типов сообщений
 @bot.message_handler(content_types=['photo', 'sticker'])
