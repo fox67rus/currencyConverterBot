@@ -48,14 +48,13 @@ def convert(message: telebot.types.Message):
 
         base, quote, amount = values
         total_base = CurrencyConverter.get_price(base, quote, amount)
-        total_base *= float(amount)
 
     except APIException as e:
         bot.reply_to(message, f'Ошибка:\n {e}')
     except Exception as e:
         bot.reply_to(message, f'Хьюстон, у нас проблема:\n{e}')
     else:
-        text = f'Конвертируем {base} в {quote}: \n ' \
+        text = f'Конвертируем {base} в {quote}:\n' \
                f'Цена {amount} {currency[base]}  = {total_base} {currency[quote]}'
         bot.send_message(message.chat.id, text)
 
