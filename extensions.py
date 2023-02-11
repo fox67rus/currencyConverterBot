@@ -15,7 +15,7 @@ class APIException(Exception):
 
 class CurrencyConverter:
     @staticmethod
-    def convert(quote: str, base: str, amount: str):
+    def get_price(quote: str, base: str, amount: str):
         try:
             quote_ticker = currency[quote]
         except KeyError:

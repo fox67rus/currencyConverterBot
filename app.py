@@ -38,7 +38,7 @@ def convert(message: telebot.types.Message):
             raise APIException('Неправильный формат команды.')
 
         quote, base, amount = values
-        total_base = CurrencyConverter.convert(quote, base, amount)
+        total_base = CurrencyConverter.get_price(quote, base, amount)
         total_base *= float(amount)
 
     except APIException as e:
