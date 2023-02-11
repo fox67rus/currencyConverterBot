@@ -4,14 +4,18 @@ import json
 import settings
 import extensions
 
+TOKEN = settings.TOKEN
+bot = telebot.TeleBot(TOKEN)
+
 currency = {
     'рубль': 'RUB',
     'доллар': 'USD',
     'евро': 'EUR'
 }
 
-TOKEN = settings.TOKEN
-bot = telebot.TeleBot(TOKEN)
+
+class ConvertionException(Exception):
+    pass
 
 
 # Обработка команд
@@ -39,8 +43,30 @@ def handle_start_help(message):
 def convert(message: telebot.types.Message):
     print(message.text)
     # доллар рубль 1
-    quote, base, amount = message.text.split(' ')
-    r = requests.get(f'https://min-api.cryptocompare.com/data/price?fsym={currency[quote]}&tsyms={currency[base]}')
+    values = message.text.split(' ')
+    if len(values) != 3:
+        raise ConvertionException('Неправильный формат команды.')
+    quote, base, amount = values
+
+    if quote == base:
+        raise ConvertionException(f'Невозможно перевести одинаковые валюты {base}.')
+
+    try:
+        quote_ticker = currency[quote]
+    except KeyError:
+        raise ConvertionException(f'Не удалось найти валюту {quote}.')
+
+    try:
+        base_ticker = currency[base]
+    except KeyError:
+        raise ConvertionException(f'Не удалось найти валюту {base}.')
+
+    try:
+        amount = float(amount)
+    except ValueError:
+        raise ConvertionException(f'Не удалось обработать количество {amount}')
+
+    r = requests.get(f'https://min-api.cryptocompare.com/data/price?fsym={quote_ticker}&tsyms={base_ticker}')
     total_base = json.loads(r.content)[currency[base]]
     text = f'Цена {amount} {quote} в {base} - {total_base}'
     bot.send_message(message.chat.id, text)
