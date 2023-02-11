@@ -42,7 +42,7 @@ def convert(message: telebot.types.Message):
     print(message.text)
 
     try:
-        values = message.text.lower().split(' ')
+        values = message.text.lower().strip().split(' ')
 
         if len(values) != 3:
             raise APIException('Неправильный формат команды. Введите /help для вызова справки.')
@@ -61,7 +61,6 @@ def convert(message: telebot.types.Message):
 
 
 # дополнительные функции
-
 # обработка других типов сообщений
 @bot.message_handler(content_types=['photo', 'sticker'])
 def repeat_photo_stick(message: telebot.types.Message):
