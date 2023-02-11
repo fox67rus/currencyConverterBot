@@ -1,3 +1,4 @@
+import requests
 import telebot
 import json
 import settings
@@ -35,12 +36,17 @@ def handle_start_help(message):
 
 
 @bot.message_handler(content_types=['text', ])
-def repeat_text(message: telebot.types.Message):
+def convert(message: telebot.types.Message):
     print(message.text)
+    # доллар рубль 1
+    quote, base, amount = message.text.split(' ')
+    r = requests.get(f'https://min-api.cryptocompare.com/data/price?fsym={currency[quote]}&tsyms={currency[base]}')
+    total_base = json.loads(r.content)[currency[base]]
+    text = f'Цена {amount} {quote} в {base} - {total_base}'
+    bot.send_message(message.chat.id, text)
 
-    bot.send_message(message.chat.id, message.text)
 
-
+# обработка других типов сообщений
 @bot.message_handler(content_types=['photo', 'sticker'])
 def repeat_photo_stick(message: telebot.types.Message):
     print(message.text)
