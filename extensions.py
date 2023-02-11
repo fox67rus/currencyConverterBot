@@ -15,26 +15,34 @@ class APIException(Exception):
 
 class CurrencyConverter:
     @staticmethod
-    def get_price(quote: str, base: str, amount: str):
-        try:
-            quote_ticker = currency[quote]
-        except KeyError:
-            raise APIException(f'Не удалось найти валюту {quote}.')
+    def get_price(base: str, quote: str, amount: str):
+        """
+
+        :param base: Имя валюты, цену в которой надо узнать
+        :param quote: Имя валюты, цену на которую надо узнать
+        :param amount: количество переводимой валюты
+        :return: возвращает нужную сумму в валюте
+        """
 
         try:
             base_ticker = currency[base]
         except KeyError:
-            raise APIException(f'Не удалось найти валюту "{base}".')
+            raise APIException(f'Не удалось найти валюту {base}.')
 
-        if quote == base:
-            raise APIException(f'Невозможно перевести одинаковые валюты "{base}".')
+        try:
+            quote_ticker = currency[quote]
+        except KeyError:
+            raise APIException(f'Не удалось найти валюту "{quote}".')
+
+        if base == quote:
+            raise APIException(f'Невозможно перевести одинаковые валюты "{quote}".')
 
         try:
             amount = float(amount)
         except ValueError:
             raise APIException(f'Не удалось обработать количество "{amount}"')
 
-        r = requests.get(f'https://min-api.cryptocompare.com/data/price?fsym={quote_ticker}&tsyms={base_ticker}')
-        total_base = json.loads(r.content)[currency[base]]
+        r = requests.get(f'https://min-api.cryptocompare.com/data/price?fsym={base_ticker}&tsyms={quote_ticker}')
+        total_base = json.loads(r.content)[currency[quote]]
 
         return total_base
