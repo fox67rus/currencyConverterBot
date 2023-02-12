@@ -41,11 +41,12 @@ class CurrencyConverter:
 
         try:
             amount = float(amount)
+
         except ValueError:
             raise APIException(f'Не удалось обработать количество "{amount}". '
-                               f'Введите корректное числовое значение')
+                               f'Введите корректное положительное числовое значение')
 
         r = requests.get(f'https://min-api.cryptocompare.com/data/price?fsym={base_ticker}&tsyms={quote_ticker}')
         total_base = json.loads(r.content)[currency[quote]]
-        total_base = round(amount * total_base, 2)
+        total_base = round(amount * total_base, 5)
         return total_base
