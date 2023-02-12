@@ -1,6 +1,5 @@
 import telebot
 
-
 from settings import TOKEN
 from extensions import currency, CurrencyConverter, APIException
 
@@ -8,13 +7,29 @@ bot = telebot.TeleBot(TOKEN)
 
 
 # Обработка команд
-@bot.message_handler(commands=['start', 'help'])
-def command_start_help(message: telebot.types.Message):
+@bot.message_handler(commands=['start'])
+def command_start(message: telebot.types.Message):
     print(message.text)
-    text = 'Для начала работы введите команду боту в следующем формате:\n ' \
+    text = f'Добрейшего времени суток вам, {message.chat.first_name}!\n\n' \
+           'Для конвертирования валют отправьте боту сообщение в следующем формате:\n ' \
            '<имя валюты> <в какую валюту переводим> ' \
            '<количество переводимой валюты>\n' \
            'Например, доллар рубль 100\n\n' \
+           'Доступные команды: \n' \
+           'Введите /values, для получения списка доступных валют.\n' \
+           'Введите /about, для получения информации о боте.\n' \
+           'Введите /help, для получения списка команд.'
+    bot.reply_to(message, text)
+
+
+@bot.message_handler(commands=['help'])
+def command_help(message: telebot.types.Message):
+    print(message.text)
+    text = 'Для конвертирования валют отправьте боту сообщение в следующем формате:\n ' \
+           '<имя валюты> <в какую валюту переводим> ' \
+           '<количество переводимой валюты>\n' \
+           'Например, доллар рубль 100\n\n' \
+           'Доступные команды: \n' \
            'Введите /values, для получения списка доступных валют.\n' \
            'Введите /about, для получения информации о боте.\n' \
            'Введите /help, для получения списка команд.'
