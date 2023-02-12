@@ -45,7 +45,8 @@ def convert(message: telebot.types.Message):
         values = message.text.lower().strip().split(' ')
 
         if len(values) != 3:
-            raise APIException('Неправильный формат команды. Введите /help для вызова справки.')
+            raise APIException('Извините, я не понял, что вы хотите сделать.\n'
+                               'Введите /help для вызова справки.')
 
         base, quote, amount = values
         total_base = CurrencyConverter.get_price(base, quote, amount)
