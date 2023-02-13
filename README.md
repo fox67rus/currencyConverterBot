@@ -1,6 +1,6 @@
 # currencyConverterBot
 Telegram-бот возвращает цену на определённое количество валюты (евро, доллар или рубль).
-Курсы валют берутся с сайта [www.cryptocompare.com](https://www.cryptocompare.com/)
+Данные по курсам валют получаются с помощью [Cryptocompare API ](https://min-api.cryptocompare.com/documentation)
 
 Человек должен отправить сообщение боту в виде: 
 
