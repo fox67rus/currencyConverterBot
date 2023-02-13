@@ -17,7 +17,8 @@ def command_start(message: telebot.types.Message):
            'Например, чтобы узнать цену 100 долларов в рублях надо отправить сообщение: доллар рубль 100\n\n' \
            'Доступные команды: \n' \
            '- Введите /values, для получения списка доступных валют.\n' \
-           '- Введите /about, для получения информации о боте.\n' \
+           '- Введите /about, для получения информации о боте.\n'\
+           '- Введите /rate, для вывода текущего курса иностранных валют к рублю.\n'\
            '- Введите /help, для получения списка команд.'
     bot.reply_to(message, text)
 
@@ -31,7 +32,8 @@ def command_help(message: telebot.types.Message):
            'Например, чтобы узнать цену 100 долларов в рублях надо отправить сообщение: доллар рубль 100\n\n' \
            'Доступные команды: \n' \
            '- Введите /values, для получения списка доступных валют.\n' \
-           '- Введите /about, для получения информации о боте.\n' \
+           '- Введите /about, для получения информации о боте.\n'\
+           '- Введите /rate, для вывода текущего курса иностранных валют к рублю.\n'\
            '- Введите /help, для получения списка команд.'
     bot.reply_to(message, text)
 
@@ -52,6 +54,19 @@ def command_about(message):
     bot.reply_to(message, text)
 
 
+@bot.message_handler(commands=['rate'])
+def command_rate(message):
+    print(message.text)
+    usd_rate = CurrencyConverter.get_price('доллар', 'рубль', '1')
+    eur_rate = CurrencyConverter.get_price('евро', 'рубль', '1')
+    print(usd_rate, eur_rate)
+    text = 'Курс валют к рублю на сегодня:\n' \
+           f'1 USD = {usd_rate} RUB\n' \
+           f'1 EUR = {eur_rate} RUB '
+
+    bot.reply_to(message, text)
+
+
 @bot.message_handler(content_types=['text', ])
 def convert(message: telebot.types.Message):
     print(message.text)
@@ -64,12 +79,15 @@ def convert(message: telebot.types.Message):
                                'Введите /help для вызова справки.')
 
         base, quote, amount = values
+        if int(amount) <= 0:
+            raise APIException('Количество переводимой валюты должно быть больше 0')
+
         total_base = CurrencyConverter.get_price(base, quote, amount)
 
-    except APIException as e:
-        bot.reply_to(message, f'Ошибка:\n{e}')
-    except Exception as e:
-        bot.reply_to(message, f'Хьюстон, у нас проблема:\n{e}')
+    except APIException as user_error:
+        bot.reply_to(message, f'Ошибка:\n{user_error}')
+    except Exception as app_error:
+        bot.reply_to(message, f'Хьюстон, у нас проблема:\n{app_error}')
     else:
         text = f'Конвертируем {base} в {quote}:\n' \
                f'Цена {amount} {currency[base]}  = {total_base} {currency[quote]}'
@@ -97,4 +115,7 @@ def handle_docs_audio(message):
     bot.reply_to(message, 'Документы я пока не умею открывать.\n Введите /help для вызова справки.')
 
 
-bot.polling(none_stop=True)
+try:
+    bot.polling(none_stop=True)
+except ConnectionError as e:
+    print('Ошибка подключения к боту:', e)
